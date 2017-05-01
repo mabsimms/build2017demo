@@ -1,0 +1,8 @@
+version: '2'
+
+services:
+  samplewebapp-baseline:
+    image: samplewebapp-baseline
+    build:
+      context: ./SampleWebApp-Baseline
+      dockerfile: Dockerfile
