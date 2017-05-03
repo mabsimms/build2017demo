@@ -13,6 +13,7 @@ using Swashbuckle.AspNetCore.Swagger;
 using SampleWebApp.Baseline.Models;
 using System.Data.SqlClient;
 using SampleWebAppBaseline.DAta;
+using SampleWebAppBaseline.Support;
 
 namespace SampleWebAppBaseline
 {
@@ -56,6 +57,9 @@ namespace SampleWebAppBaseline
             // Add repositories
             services.AddScoped<IRaffleRepository, RaffleRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
+
+            var lf = LoggingManager.GetLoggerFactory(Configuration);
+            services.AddSingleton<ILoggerFactory>(lf);
 
             // Register the Swagger generator, defining one or more Swagger documents
             services.AddSwaggerGen(c =>
