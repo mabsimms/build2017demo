@@ -17,10 +17,7 @@ namespace SampleWebApp.Baseline.Models
 
         [ForeignKey("RaffleId")]
         public Raffle Raffle { get; set; }
-
-        public long AssignedToId { get; set; }
-
-        [ForeignKey("AssignedToId")]
+        
         public User AssignedTo { get; set; }
     }
 }

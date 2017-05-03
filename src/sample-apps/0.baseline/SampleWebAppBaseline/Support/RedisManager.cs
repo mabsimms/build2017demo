@@ -13,7 +13,15 @@ namespace SampleWebApp.Baseline
         private static Lazy<ConnectionMultiplexer> lazyConnection = 
             new Lazy<ConnectionMultiplexer>(() =>
         {
-            return ConnectionMultiplexer.Connect("contoso5.redis.cache.windows.net,abortConnect=false,ssl=true,password=...");
+            var server = Environment.GetEnvironmentVariable("REDIS_SERVER");
+            if (string.IsNullOrEmpty(server))
+                server = "localhost";
+            var password = Environment.GetEnvironmentVariable("REDIS_PASSWORD");
+            if (string.IsNullOrEmpty(password))
+                password = "12345";
+
+            var connectionString = $"{server},abortConnect=false,ssl=true,password={password}";
+            return ConnectionMultiplexer.Connect(connectionString);
         });
 
         public static ConnectionMultiplexer Connection

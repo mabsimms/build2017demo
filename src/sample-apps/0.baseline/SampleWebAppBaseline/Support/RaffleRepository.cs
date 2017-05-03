@@ -36,7 +36,8 @@ namespace SampleWebApp.Baseline.Support
             // updates the list of raffles will also update redis
             var raffles = await _context.Raffles.ToListAsync();
             await redisClient.StringSetAsync(KEY_REDIS_RAFFLE_LIST,
-                JsonConvert.SerializeObject(raffles.ToArray())); 
+                JsonConvert.SerializeObject(raffles.ToArray()), 
+                expiry: TimeSpan.FromSeconds(15)); // test purposes only 
               
             return raffles;
         }

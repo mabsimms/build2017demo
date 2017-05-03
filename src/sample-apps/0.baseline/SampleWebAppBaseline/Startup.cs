@@ -11,6 +11,8 @@ using SampleWebApp.Baseline.Support;
 using Microsoft.EntityFrameworkCore;
 using Swashbuckle.AspNetCore.Swagger;
 using SampleWebApp.Baseline.Models;
+using System.Data.SqlClient;
+using SampleWebAppBaseline.DAta;
 
 namespace SampleWebAppBaseline
 {
@@ -34,11 +36,21 @@ namespace SampleWebAppBaseline
             // Add framework services.
             services.AddMvc();
 
-            // Add data store
-            var connection = @"Server=(localdb)\mssqllocaldb;Database=RaffleDb;Trusted_Connection=True;";
-            services.AddDbContext<RaffleContext>(options => options.UseSqlServer(connection));
-            services.AddDbContext<UserContext>(options => options.UseSqlServer(connection));
-
+            // Add data store          
+            var connBuilder = new SqlConnectionStringBuilder();
+            connBuilder.DataSource = "tcp:mastest1.database.windows.net,1433";
+            connBuilder.PersistSecurityInfo = false;
+            connBuilder.UserID = "masimms";
+            connBuilder.Password = "{password}";
+            connBuilder.MultipleActiveResultSets = false;
+            connBuilder.Encrypt = true;
+            connBuilder.TrustServerCertificate = false;
+            connBuilder.ConnectTimeout = 30;
+           
+            services.AddEntityFrameworkSqlServer()
+                .AddDbContext<RaffleContext>(options => 
+                    options.UseSqlServer(connBuilder.ToString()));
+            
             // Add repositories
             services.AddScoped<IRaffleRepository, RaffleRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
@@ -51,7 +63,8 @@ namespace SampleWebAppBaseline
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, 
+            ILoggerFactory loggerFactory, RaffleContext raffleContext)
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();

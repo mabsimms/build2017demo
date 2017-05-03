@@ -10,9 +10,9 @@ namespace SampleWebApp.Baseline.Support
 {
     public class UserRepository : IUserRepository
     {
-        private readonly UserContext _context;
+        private readonly RaffleContext _context;
 
-        public UserRepository(UserContext context)
+        public UserRepository(RaffleContext context)
         {
             _context = context;
         }
