@@ -6,3 +6,5 @@ services:
     build:
       context: ./SampleWebAppBaseline
       dockerfile: Dockerfile
+  redis:
+    image: "redis:alpine"      
