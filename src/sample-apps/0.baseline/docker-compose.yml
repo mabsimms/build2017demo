@@ -1,10 +1,29 @@
 version: '2'
 
 services:
+  # The sample web application 
   samplewebappbaseline:
-    image: samplewebappbaseline
-    build:
-      context: ./SampleWebAppBaseline
-      dockerfile: Dockerfile
+    image: mabsimms/bld2017_app_0:latest  
+    ports:
+      - "8000:80"
+    depends_on:
+      - redis
+      - sqlserver
+    environment:      
+      - SQL_DATASOURCE=tcp:sqlserver,1433
+      - SQL_USERNAME=sa
+      - SQL_PASSWORD=S_PerSt!rongPW123
+      - REDIS_SERVER=redis
+
+  # The redis cache
   redis:
     image: "redis:alpine"      
+
+  # The backing database
+  sqlserver:
+    image: "microsoft/mssql-server-linux"
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=S_PerSt!rongPW123
+    volumes:
+      - /mnt/datafiles:/var/opt/mssql

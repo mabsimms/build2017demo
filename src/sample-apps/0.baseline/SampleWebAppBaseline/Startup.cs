@@ -38,10 +38,10 @@ namespace SampleWebAppBaseline
 
             // Add data store          
             var connBuilder = new SqlConnectionStringBuilder();
-            connBuilder.DataSource = "tcp:mastest1.database.windows.net,1433";
+            connBuilder.DataSource = Environment.GetEnvironmentVariable("SQL_DATASOURCE");
             connBuilder.PersistSecurityInfo = false;
-            connBuilder.UserID = "masimms";
-            connBuilder.Password = "{password}";
+            connBuilder.UserID = Environment.GetEnvironmentVariable("SQL_USER");
+            connBuilder.Password = Environment.GetEnvironmentVariable("SQL_PASSWORD");
             connBuilder.MultipleActiveResultSets = false;
             connBuilder.Encrypt = true;
             connBuilder.TrustServerCertificate = false;

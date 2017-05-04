@@ -2,25 +2,33 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace SampleWebApp.Baseline
 {
     public class RedisManager
-    {
-        // TODO - update this with a real value and pull direct from
-        // environment
+    {        
         private static Lazy<ConnectionMultiplexer> lazyConnection = 
             new Lazy<ConnectionMultiplexer>(() =>
         {
             var server = Environment.GetEnvironmentVariable("REDIS_SERVER");
             if (string.IsNullOrEmpty(server))
                 server = "localhost";
-            var password = Environment.GetEnvironmentVariable("REDIS_PASSWORD");
-            if (string.IsNullOrEmpty(password))
-                password = "12345";
+            //var password = Environment.GetEnvironmentVariable("REDIS_PASSWORD");
+            //if (string.IsNullOrEmpty(password))
+            //    password = "12345";
 
-            var connectionString = $"{server},abortConnect=false,ssl=true,password={password}";
+            // .NET Core on Linux issue workaround - manually resolve the IP address
+            // see https://github.com/dotnet/corefx/issues/8768 
+            Console.WriteLine("Looking up IP address(es) for redis server {0}", server);
+            var ipAddresses = Dns.GetHostAddressesAsync(server).GetAwaiter().GetResult();
+            var addr = ipAddresses.FirstOrDefault();
+            if (addr == null)
+                throw new ArgumentOutOfRangeException("REDIS_SERVER", "Could not look up dns information for redis server " + server);
+            
+            var connectionString = $"{server},abortConnect=false,ssl=false";
+            Console.WriteLine("Using redis connection string {0}", connectionString);
             return ConnectionMultiplexer.Connect(connectionString);
         });
 
