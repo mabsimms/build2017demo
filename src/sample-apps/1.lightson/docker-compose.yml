@@ -4,8 +4,8 @@ services:
   # The sample web application 
   webapp:
     image: mabsimms/bld2017_app_0:latest  
-    ports:
-      - "8000:80"
+    #ports:
+    #  - "8000:80"
     depends_on:
       - redis
       - sqlserver
@@ -14,6 +14,14 @@ services:
       - SQL_USER=sa
       - SQL_PASSWORD=S_PerSt!rongPW123
       - REDIS_SERVER=redis
+
+  # Haproxy front-end
+  haproxy:
+    image: mabsimms/bld2017_haproxy_1
+    ports: 
+      - "8000:80"
+    depends_on:
+      - webapp
 
   # The redis cache
   redis:
@@ -30,4 +38,9 @@ services:
     volumes:
       - /mnt/datafiles/sql:/var/opt/mssql
 
+networks:
+  default:
+    external:
+      name: build2017-demo-network
   
+

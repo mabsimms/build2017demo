@@ -121,3 +121,6 @@ sudo systemctl enable grafana-server.service
 - https://github.com/influxdata/telegraf/tree/master/plugins/inputs/logparser
 - https://www.influxdata.com/telegraf-correlate-log-metrics-data-performance-bottlenecks/
 
+### Monitoring docker containers
+
+- https://blog.vpetkov.net/2016/08/04/monitor-docker-resource-metrics-with-grafana-influxdb-and-telegraf/

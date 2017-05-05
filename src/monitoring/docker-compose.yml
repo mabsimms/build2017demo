@@ -36,3 +36,19 @@ services:
       - "5044:5044"
     volumes:
       - /mnt/docker/elk:/var/lib/elasticsearch
+
+  telegrafhost:
+    image: 'mabsimms/telegraf-host:latest'
+    environment:
+      - INFLUX_SERVER=influxdb
+      - INFLUX_DB=host
+      - affinity:container!=*telegrafhost* 
+    privileged: true
+    restart: always
+    volumes:
+      - '/var/run/docker.sock:/var/run/docker.sock'
+
+networks:
+  default:
+    external:
+      name: build2017-demo-network
