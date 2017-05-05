@@ -27,7 +27,7 @@ namespace SampleWebApp.Baseline
             if (addr == null)
                 throw new ArgumentOutOfRangeException("REDIS_SERVER", "Could not look up dns information for redis server " + server);
             
-            var connectionString = $"{server},abortConnect=false,ssl=false";
+            var connectionString = $"{addr},abortConnect=false,ssl=false";
             Console.WriteLine("Using redis connection string {0}", connectionString);
             return ConnectionMultiplexer.Connect(connectionString);
         });

@@ -11,7 +11,7 @@ services:
       - sqlserver
     environment:      
       - SQL_DATASOURCE=tcp:sqlserver,1433
-      - SQL_USERNAME=sa
+      - SQL_USER=sa
       - SQL_PASSWORD=S_PerSt!rongPW123
       - REDIS_SERVER=redis
 
@@ -22,8 +22,12 @@ services:
   # The backing database
   sqlserver:
     image: "microsoft/mssql-server-linux"
+    ports:
+      - "1433:1433"
     environment:
       - ACCEPT_EULA=Y
       - SA_PASSWORD=S_PerSt!rongPW123
     volumes:
-      - /mnt/datafiles:/var/opt/mssql
+      - /mnt/datafiles/sql:/var/opt/mssql
+
+  

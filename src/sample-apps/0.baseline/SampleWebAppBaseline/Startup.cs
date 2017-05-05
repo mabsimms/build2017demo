@@ -44,9 +44,11 @@ namespace SampleWebAppBaseline
             connBuilder.Password = Environment.GetEnvironmentVariable("SQL_PASSWORD");
             connBuilder.MultipleActiveResultSets = false;
             connBuilder.Encrypt = true;
-            connBuilder.TrustServerCertificate = false;
+            connBuilder.TrustServerCertificate = true;
             connBuilder.ConnectTimeout = 30;
-           
+            Console.WriteLine("Building sql connection for data source {0}, with user {1}", 
+                connBuilder.DataSource, connBuilder.UserID);
+
             services.AddEntityFrameworkSqlServer()
                 .AddDbContext<RaffleContext>(options => 
                     options.UseSqlServer(connBuilder.ToString()));
