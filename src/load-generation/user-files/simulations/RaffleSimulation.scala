@@ -32,12 +32,14 @@ class RaffleSimulation extends Simulation {
   val headers_10 = Map("Content-Type" -> "application/x-www-form-urlencoded") // Note the headers specific to a given request
 
   val scn = scenario("Simple Mobile Client") // A scenario is a chain of requests and pauses
-    .exec(http("request_1")
-      .get("/api/raffle"))
-    .pause(1) // Note that Gatling has recorded real time pauses
-    .exec(http("request_2")
-      .get("/api/raffle"))
-    .pause(2)
-    
-  setUp(scn.inject(atOnceUsers(1)).protocols(httpConf))
+    .repeat(20) {
+      exec(http("request_1")
+        .get("/api/raffle"))
+      .pause(1) // Note that Gatling has recorded real time pauses
+      .exec(http("request_2")
+        .get("/api/raffle"))
+      .pause(2)
+      }
+
+  setUp(scn.inject(atOnceUsers(1000)).protocols(httpConf))
 }
