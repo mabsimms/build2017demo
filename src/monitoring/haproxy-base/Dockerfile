@@ -4,6 +4,9 @@
 # a list of version numbers.
 FROM phusion/baseimage:0.9.21
 
+# For more information on configuraing phusion base images
+# https://github.com/phusion/baseimage-docker#getting_started
+
 # Use baseimage-docker's init system.
 CMD ["/sbin/my_init"]
 

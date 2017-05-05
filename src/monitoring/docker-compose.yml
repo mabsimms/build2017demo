@@ -3,13 +3,19 @@ version: '2'
 services:
   # Baseline influx db
   influxdb:
-    image: influxdb:latest
+    build: 
+      context: ./influxdb
+      dockerfile: Dockerfile
+    image: mas_influxdb:latest
     container_name: influxdb
     ports:
       - "8083:8083"
       - "8086:8086"  
+      - "2003:2003"  
     env_file:
       - 'env.influxdb'
+    volumes:
+      - /mnt/docker/influx:/var/lib/influxdb
 
   grafana:
     image: grafana/grafana:latest
@@ -18,6 +24,8 @@ services:
       - "3000:3000"
     links:
       - influxdb
+    volumes:
+      - /mnt/docker/grafana:/var/lib/grafana
 
   elk:
     image: sebp/elk:latest
