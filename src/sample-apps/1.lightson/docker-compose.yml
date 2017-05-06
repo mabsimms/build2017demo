@@ -3,7 +3,7 @@ version: '2'
 services:
   # The sample web application 
   webapp:
-    image: mabsimms/bld2017_app_0:latest  
+    image: mabsimms/bld2017_app_1:latest  
     #ports:
     #  - "8000:80"
     depends_on:
@@ -17,7 +17,10 @@ services:
 
   # Haproxy front-end
   haproxy:
-    image: mabsimms/bld2017_haproxy_1
+    build:
+      context: ./haproxy
+      dockerfile: Dockerfile
+    #image: mabsimms/bld2017_haproxy_1:latest
     ports: 
       - "8000:80"
     depends_on:

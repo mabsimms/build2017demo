@@ -41,6 +41,7 @@ services:
     image: 'mabsimms/telegraf-host:latest'
     environment:
       - INFLUX_SERVER=influxdb
+      - INFLUX_PORT=8086
       - INFLUX_DB=host
       - affinity:container!=*telegrafhost* 
     privileged: true
