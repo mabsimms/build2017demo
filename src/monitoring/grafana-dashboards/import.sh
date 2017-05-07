@@ -5,8 +5,8 @@
 # sudo npm install -g wizzy
 
 wizzy init
-wizzy set grafana url http://localhost:3000
-wizzy set grafana username admin
-wizzy set grafana password admin
+wizzy set grafana url http://${AGENT_HOST}:3000
+wizzy set grafana username ${GRAFANA_USER}
+wizzy set grafana password ${GRAFANA_USER}
 wizzy export dashboards
 wizzy export datasources

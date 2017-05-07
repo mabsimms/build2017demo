@@ -1,0 +1,27 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "dnsNamePrefix": {
+      "value": "masbld2017"
+    },
+    "agentCount": {
+      "value": 8
+    },
+    "agentVMSize": {
+      "value": "Standard_D3_v2"
+    },
+    "linuxAdminUsername": {
+      "value": "masimms"
+    },
+    "orchestratorType": {
+      "value": "Swarm"
+    },
+    "masterCount": {
+      "value": 3
+    },
+    "sshRSAPublicKey": {
+      "value": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC3jsqhXD80PCE27R0/rKIEACdbIjRasV9KSRF2QwVi7XcfNIsWeX3qYaxPKtmJeQrvW4C7ohwo8z/Pm2x42fWliiMrjIitmMZIdd6JzUNVM7ewQ/0Snnl8kLuvfJU7V46EAzNtV+QHNQE/xFJcqCK+rIIp9ZbDFVdF/TXrSIyfNnalaGoKtdf/iClc/ADZ5Yxbedq3B+8zd1MdIKQ8kqP+SoLkjf9KkuWCGZ04kEO2iHGEl0fyRb4e9HtwYQWym2gu7MhLaK9ussGw5WdSeV+s8HBuES+DyCbQeDCa1vNm/ZocCUd4DHo26x97pswt6JatTcMhhjnyGARMd+/hmSxV masimms@maslinbook"
+    }
+  }
+}

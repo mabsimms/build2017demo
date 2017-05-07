@@ -4,8 +4,6 @@ services:
   # The sample web application 
   webapp:
     image: mabsimms/bld2017_app_1:latest  
-    #ports:
-    #  - "8000:80"
     depends_on:
       - redis
       - sqlserver
@@ -14,6 +12,7 @@ services:
       - SQL_USER=sa
       - SQL_PASSWORD=S_PerSt!rongPW123
       - REDIS_SERVER=redis
+      - constraint:node!=monitoring
 
   # Haproxy front-end
   haproxy:
@@ -22,13 +21,17 @@ services:
       dockerfile: Dockerfile
     #image: mabsimms/bld2017_haproxy_1:latest
     ports: 
-      - "8000:80"
+      - "80:80"
     depends_on:
       - webapp
+    environment:      
+      - constraint:node!=monitoring
 
   # The redis cache
   redis:
     image: "redis:alpine"      
+    environment:      
+      - constraint:node!=monitoring
 
   # The backing database
   sqlserver:
@@ -38,6 +41,7 @@ services:
     environment:
       - ACCEPT_EULA=Y
       - SA_PASSWORD=S_PerSt!rongPW123
+      - constraint:node!=monitoring
     volumes:
       - /mnt/datafiles/sql:/var/opt/mssql
 

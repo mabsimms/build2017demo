@@ -3,10 +3,7 @@ version: '2'
 services:
   # Baseline influx db
   influxdb:
-    build: 
-      context: ./influxdb
-      dockerfile: Dockerfile
-    image: mas_influxdb:latest
+    image: mabsimms/mas_influxdb:latest
     container_name: influxdb
     ports:
       - "8083:8083"
@@ -16,6 +13,8 @@ services:
       - 'env.influxdb'
     volumes:
       - /mnt/docker/influx:/var/lib/influxdb
+    environment:
+      - constraint:node==monitoring
 
   grafana:
     image: grafana/grafana:latest
@@ -26,6 +25,8 @@ services:
       - influxdb
     volumes:
       - /mnt/docker/grafana:/var/lib/grafana
+    environment:
+      - constraint:node==monitoring
 
   elk:
     image: sebp/elk:latest
@@ -36,6 +37,8 @@ services:
       - "5044:5044"
     volumes:
       - /mnt/docker/elk:/var/lib/elasticsearch
+    environment:
+      - constraint:node==monitoring
 
   telegrafhost:
     image: 'mabsimms/telegraf-host:latest'
