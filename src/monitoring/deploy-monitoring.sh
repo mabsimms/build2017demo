@@ -60,34 +60,25 @@ docker stack deploy --compose-file docker-compose.yml monitoring
 #####################################################################################
 # Import the grafana dashboards and data sources
 #####################################################################################
-ssh $DEMO_MGMT_FQDN export MONITORING_PASSWORD=$MONITORING_PASSWORD
-ssh $DEMO_MGMT_FQDN export MON_NODE=$MON_NODE
-scp update-grafana-dashboard.sh $MGMT_FQDN:update-grafana-dashboard.sh
-ssh $DEMO_MGMT_FQDN chmod 700 update-grafana-dashboard.sh
-ssh $DEMO_MGMT_FQDN ./update-grafana-dashboard.sh
-
-curl -X PUT -H "Content-Type: application/json" -d '{
-  "oldPassword": "admin",
-  "newPassword": "newpass",
-  "confirmNew": "newpass"
-}' http://admin:admin@<your_grafana_host>:3000/api/user/password
-
-
-ssh $DEMO_MGMT_FQDN "sudo apt-get update && sudo apt-get install -y npm && sudo npm install -g wizzy"
-ssh $DEMO_MGMT_FQDN "sudo ln -s /usr/bin/nodejs /usr/bin/node"
-ssh $DEMO_MGMT_FQDN "sudo wizzy init"
-ssh $DEMO_MGMT_FQDN "sudo wizzy set grafana url http://${MON_NODE}:3000"
-
-ssh $DEMO_MGMT_FQDN "sudo wizzy set grafana envs demo url http://{$DEMO_AGENT_FQDN}:3000"
-ssh $DEMO_MGMT_FQDN "sudo wizzy set grafana username $MONITORING_USERNAME"
-ssh $DEMO_MGMT_FQDN "sudo wizzy set grafana password $MONITORING_PASSWORD"
 
 # Update the grafana password
+scp update-grafana-dashboard.sh $DEMO_MGMT_FQDN:update-grafana-dashboard.sh
+ssh $DEMO_MGMT_FQDN chmod 700 update-grafana-dashboard.sh
+ssh $DEMO_MGMT_FQDN "./update-grafana-dashboard.sh $MON_NODE $MONITORING_PASSWORD"
 
-# wizzy set grafana envs demo username $MONITORING_USERNAME
-# wizzy set grafana envs demo password $MONTIORING_PASSWORD
-# wizzy set context demo
+# Open the monitoring ports
+./open-ports.sh
 
-# # Export == export from wizzy to grafana
-# wizzy export datasources
-# wizzy export dashboards
+# Load grafana data 
+cd grafana-dashboards
+wizzy init
+wizzy set grafana url http://$DEMO_AGENT_FQDN:3000/
+wizzy set grafana username admin
+wizzy set grafana password $MONITORING_PASSWORD
+
+
+# Export == export from wizzy to grafana
+wizzy export datasources
+wizzy export dashboards
+
+cd ../

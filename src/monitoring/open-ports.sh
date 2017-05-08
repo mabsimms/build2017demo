@@ -6,7 +6,7 @@
 # Open up the monitoring ports; note - this is not a recommended production approach.  Would be 
 # better to install an nginx/haproxy specifically for the mgmt services and route traffic through
 # there
-PORTS=(3000 5601)
+PORTS=(3000 5601 8086)
 
 # Get the name of the network resources
 LB_NAME=`az network lb list --resource-group ${DEMO_RESOURCE_GROUP} --output table | \
@@ -14,7 +14,7 @@ LB_NAME=`az network lb list --resource-group ${DEMO_RESOURCE_GROUP} --output tab
 echo "Using load balancer name ${LB_NAME}"
 
 POOL_NAME=`az network lb address-pool list --resource-group ${DEMO_RESOURCE_GROUP}  \
-    --lb-name ${LB_NAME} --output table | grep pool | cut -d' ' -f1`
+    --lb-name ${LB_NAME} --output table | grep agentpublic | cut -d' ' -f1`
 echo "Using back end pool name ${POOL_NAME}"
 
 FRONTEND_NAME=`az network lb frontend-ip list --resource-group ${DEMO_RESOURCE_GROUP} \

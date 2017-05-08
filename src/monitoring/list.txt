@@ -1,1 +1,0 @@
-eastus2     swarm-agent-lb-10FB764F   Succeeded            mas-bld-rg       cd17903f-92ee-4bd9-af85-c5bc4f5ce44b

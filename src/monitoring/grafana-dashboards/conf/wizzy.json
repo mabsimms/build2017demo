@@ -1,9 +1,9 @@
 {
   "config": {
     "grafana": {
-      "url": "http://localhost:3000",
+      "url": "http://masbldagent.eastus2.cloudapp.azure.com:3000/",
       "username": "admin",
-      "password": "admin"
+      "password": "Gargle123"
     }
   }
 }

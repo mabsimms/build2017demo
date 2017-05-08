@@ -4,6 +4,8 @@ services:
   # Baseline influx db
   influxdb:
     image: mabsimms/mas_influxdb:latest
+    ports:
+      - "8086:8086"
     volumes:
       - influx-data:/var/lib/influxdb
     environment:
@@ -35,6 +37,10 @@ services:
     image: 'mabsimms/telegraf-host:latest'
     deploy:
       mode: global
+    environment:
+      - INFLUX_SERVER=influxdb
+      - INFLUX_PORT=8086
+      - INFLUX_DB=host
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
 
