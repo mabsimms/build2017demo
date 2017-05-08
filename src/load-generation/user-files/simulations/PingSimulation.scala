@@ -31,7 +31,7 @@ class PingSimulation extends Simulation {
 
   val headers_10 = Map("Content-Type" -> "application/x-www-form-urlencoded") // Note the headers specific to a given request
 
-  val scn = scenario("Simple Ping test") // A scenario is a chain of requests and pauses
+  val scn = scenartio("Simple Ping test") // A scenario is a chain of requests and pauses
     .repeat(1000) {
       exec(http("request_1")
         .get("/api/ping"))

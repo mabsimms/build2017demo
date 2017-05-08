@@ -5,10 +5,6 @@ services:
   influxdb:
     image: mabsimms/mas_influxdb:latest
     container_name: influxdb
-    ports:
-      - "8083:8083"
-      - "8086:8086"  
-      - "2003:2003"  
     env_file:
       - 'env.influxdb'
     volumes:
@@ -28,17 +24,15 @@ services:
     environment:
       - constraint:node==monitoring
 
-  elk:
-    image: sebp/elk:latest
-    container_name: elk
-    ports:
-      - "9200:9200"
-      - "5601:5601"
-      - "5044:5044"
-    volumes:
-      - /mnt/docker/elk:/var/lib/elasticsearch
-    environment:
-      - constraint:node==monitoring
+#  elk:
+#    image: sebp/elk:latest
+#    container_name: elk
+#    ports:
+#      - "5601:5601"
+#    volumes:
+#      - /mnt/docker/elk:/var/lib/elasticsearch
+#    environment:
+#      - constraint:node==monitoring
 
   telegrafhost:
     image: 'mabsimms/telegraf-host:latest'
