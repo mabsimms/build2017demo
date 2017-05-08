@@ -12,5 +12,6 @@ cd ../
 
 # Bring up the full image set
 sudo docker-compose pull
-sudo docker-compose build
-sudo docker-compose up
+
+echo "Starting containers.."
+docker stack deploy --compose-file docker-compose.yml webapp1
