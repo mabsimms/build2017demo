@@ -19,9 +19,26 @@ fi
 # Deploy the monitoring services.  Ensure that telegraf has a container on each node
 #####################################################################################
 
+# Set the monitoring label on the first node
+MON_NODE=`docker node ls | grep agentpublic | sort -k2 | head -1 | tr -s ' ' | cut -d' ' -f2`
+
+SAVEIFS=$IFS
+IFS=$'\n'
+WRK_NODES=(`docker node ls | grep agentpublic | sort -k2 | tail -n +2 | tr -s ' ' | cut -d' ' -f2 `)
+IFS=$SAVEIFS
+
+echo "Setting node $MON_NODE with label role=monitoring"
+docker node update $MON_NODE --label-add role=monitoring
+
+for i in "${WRK_NODES[@]}"
+do
+   echo "Setting node $i with label role=worker"
+   docker node update $i --label-add role=worker
+done
+
 # Get the number of agent nodes
 echo -n "Checking for agent node count : "
-NODE_COUNT=`docker info 2>/dev/null | grep swarm-agent | wc -l`
+NODE_COUNT=`docker node ls | grep -v master | tail -n +2 | wc -l`
 echo "${NODE_COUNT} agent nodes"
 
 # Build the monitoring containers
@@ -36,12 +53,9 @@ cd ../
 # Deploy the monitoring solution
 echo "Pulling containers.."
 docker-compose pull 
-echo "Creating containers.."
-docker-compose create
+
 echo "Starting containers.."
-docker-compose start
-echo "Scaling telegraf agent monitor to all nodes.."
-docker-compose scale telegrafhost=$NODE_COUNT
+docker stack deploy --compose-file docker-compose.yml monitoring
 
 #####################################################################################
 # Import the grafana dashboards and data sources

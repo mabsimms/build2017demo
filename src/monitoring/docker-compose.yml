@@ -1,32 +1,29 @@
-version: '2'
+version: '3'
 
 services:
   # Baseline influx db
   influxdb:
     image: mabsimms/mas_influxdb:latest
-    container_name: influxdb
-    env_file:
-      - 'env.influxdb'
     volumes:
-      - /mnt/docker/influx:/var/lib/influxdb
+      - influx-data:/var/lib/influxdb
     environment:
-      - constraint:node==monitoring
+      - INFLUXDB_GRAPHITE_ENABLED=1
+    deploy:
+      placement:
+        constraints: [node.labels.role == monitoring]
 
   grafana:
     image: grafana/grafana:latest
-    container_name: grafana
     ports:
       - "3000:3000"
-    links:
-      - influxdb
     volumes:
-      - /mnt/docker/grafana:/var/lib/grafana
-    environment:
-      - constraint:node==monitoring
+      - grafana-data:/var/lib/grafana
+    deploy:
+      placement:
+        constraints: [node.labels.role == monitoring]
 
 #  elk:
 #    image: sebp/elk:latest
-#    container_name: elk
 #    ports:
 #      - "5601:5601"
 #    volumes:
@@ -36,17 +33,18 @@ services:
 
   telegrafhost:
     image: 'mabsimms/telegraf-host:latest'
-    environment:
-      - INFLUX_SERVER=influxdb
-      - INFLUX_PORT=8086
-      - INFLUX_DB=host
-      - affinity:container!=*telegrafhost* 
-    privileged: true
-    restart: always
+    deploy:
+      mode: global
     volumes:
-      - '/var/run/docker.sock:/var/run/docker.sock'
+      - "/var/run/docker.sock:/var/run/docker.sock"
 
 networks:
   default:
     external:
       name: build2017-demo-network
+
+volumes:
+  grafana-data:
+
+  influx-data:
+

@@ -10,25 +10,21 @@ USERNAME=${DEMO_USERNAME}
 REGION=${DEMO_LOCATION}
 PATH_TO_PRIVATE_KEY=${DEMO_SSH_PUBLIC_KEY_FILE}
 
-echo "Looking up ACS deployment name"
-ACS_NAME=`az acs list --resource-group ${DEMO_RESOURCE_GROUP} | jq .[].name | sed 's/\"//g'`
+# Get the network configuration for this cluster
+MGMT_PIP_NAME=`az network public-ip list --resource-group masbld-rg --output table | grep mgmt | tr -s ' ' | cut -d ' ' -f5`
+MGMT_FQDN=`az network public-ip show --name ${MGMT_PIP_NAME} \
+    --resource-group ${DEMO_RESOURCE_GROUP} | jq .dnsSettings.fqdn | sed 's/\"//g'`
+echo "Management public ip name ${MGMT_PIP_NAME} fqdn is ${MGMT_FQDN}"
 
-echo "Looking up management FQDN"
-MGMT_FQDN=`az acs show --name ${ACS_NAME} --resource-group ${DEMO_RESOURCE_GROUP} | \
-    jq .masterProfile.fqdn | sed 's/\"//g'`
+AGENT_PIP_NAME=`az network public-ip list --resource-group masbld-rg --output table | grep agent | tr -s ' ' | cut -d ' ' -f5`
+AGENT_FQDN=`az network public-ip show --name ${AGENT_PIP_NAME} \
+    --resource-group ${DEMO_RESOURCE_GROUP} | jq .dnsSettings.fqdn | sed 's/\"//g'`
+echo "Agent public ip name ${AGENT_PIP_NAME} fqdn is ${AGENT_FQDN}"
 
 echo "Connecting tunnel to management endpoint $FQDN"
 ssh -fNL ${LOCAL_PORT}:localhost:${REMOTE_PORT} -p 2200 ${USERNAME}@${MGMT_FQDN} \
     -i ${PATH_TO_PRIVATE_KEY}
 export DOCKER_HOST=:2375
-
-# Get the FQDN of the agent public iP
-echo "Looking up agent public ip name"
-AGENT_PIP_NAME=`az network public-ip list --resource-group ${DEMO_RESOURCE_GROUP} \
-    --output table | grep agents | tr -s ' ' | cut -d' ' -f5`
-echo "Looking up agent public ip fqdn"
-AGENT_FQDN=`az network public-ip show --name ${AGENT_PIP_NAME} \
-    --resource-group ${DEMO_RESOURCE_GROUP} | jq .dnsSettings.fqdn | sed 's/\"//g'`
 
 # Add these settings to the environment file
 echo "Adding connection values to environment settings"
