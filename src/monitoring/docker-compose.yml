@@ -6,6 +6,7 @@ services:
     image: mabsimms/mas_influxdb:latest
     ports:
       - "8086:8086"
+      - "2003:2003"
     volumes:
       - influx-data:/var/lib/influxdb
     environment:
