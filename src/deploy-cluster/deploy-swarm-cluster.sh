@@ -46,26 +46,30 @@ fi
 #     --name ${DNS_PREFIX}-key-public --file "${SSH_PUBLIC_KEY_FILE}" 
 
 # # Update the acs-engine template parameters based on the settings above
+# # https://github.com/Azure/acs-engine/blob/master/README.md#deployment-usage
 PARAMETERS_FILE=deploy-${DNS_PREFIX}.json
 echo "Creating deployment parameters file ${PARAMETERS_FILE}"
-cp swarm-mode-template.json ${PARAMETERS}.json
+cp swarm-mode-template.json ${PARAMETERS_FILE} 
 sed -i'' -e "s/##DNS_PREFIX##/${DNS_PREFIX}/" $PARAMETERS_FILE
 sed -i'' -e "s/##USERNAME##/${USERNAME}/" $PARAMETERS_FILE
 sed -i'' -e "s/##AGENT_COUNT##/${AGENT_COUNT}/" $PARAMETERS_FILE
 sed -i'' -e "s|##SSH_PUBLIC_KEY##|${SSH_PUBLIC_KEY}|" $PARAMETERS_FILE
 
-# Deploy the cluster
 echo "Deploying resource group ${RESOURCE_GROUP} to region ${LOCATION}"
 az group create --name "${RESOURCE_GROUP}" --location "${LOCATION}"
 
-# https://docs.microsoft.com/en-us/azure/container-service/container-service-create-acs-cluster-cli
+# Create the ARM template via acs-engine
+rm -rf ./_output/
+../../tools/acs-engine $PARAMETERS_FILE
+
+# Deploy the cluster 
 echo "Deploying ACS cluster into resource group ${RESOURCE_GROUP}"
-az acs create --resource-group ${RESOURCE_GROUP} --name ${DNS_PREFIX}${DEPLOYMENT_NAME} \
-    --admin-username ${USERNAME} \
-    --agent-vm-size Standard_D3_v2 --agent-count ${AGENT_COUNT} \
-    --dns-prefix ${DNS_PREFIX} --location ${LOCATION} \
-    --master-count 3 --orchestrator-type Swarm \
-    --ssh-key-value ${SSH_PUBLIC_KEY_FILE}
+DIRECTORY=`ls _output`
+az group deployment create \
+    --name "${DEPLOYMENT_NAME}" \
+    --resource-group "${RESOURCE_GROUP}" \
+    --template-file "./_output/${DIRECTORY}/azuredeploy.json" \
+    --parameters "@./_output/${DIRECTORY}/azuredeploy.parameters.json"
 echo "ACS cluster deployment complete"
 
 # Create the environment-masbld.sh file

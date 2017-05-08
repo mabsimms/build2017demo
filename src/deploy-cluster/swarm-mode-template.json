@@ -1,11 +1,12 @@
-Version": "vlabs",
+{
+  "apiVersion": "vlabs",
   "properties": {
     "orchestratorProfile": {
       "orchestratorType": "SwarmMode"
     },
     "masterProfile": {
       "count": 3,
-      "dnsPrefix": "##DNS_PREFIX##",
+      "dnsPrefix": "##DNS_PREFIX##mgmt",
       "vmSize": "Standard_D2_v2"
     },
     "agentPoolProfiles": [
@@ -13,7 +14,7 @@ Version": "vlabs",
         "name": "agentpublic",
         "count": ##AGENT_COUNT##,
         "vmSize": "Standard_D3_v2",
-        "dnsPrefix": "",
+        "dnsPrefix": "##DNS_PREFIX##agent",
         "ports": [
           80,
           443,

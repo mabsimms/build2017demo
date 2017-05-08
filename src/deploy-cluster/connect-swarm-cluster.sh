@@ -30,7 +30,6 @@ echo "Looking up agent public ip fqdn"
 AGENT_FQDN=`az network public-ip show --name ${AGENT_PIP_NAME} \
     --resource-group ${DEMO_RESOURCE_GROUP} | jq .dnsSettings.fqdn | sed 's/\"//g'`
 
-
 # Add these settings to the environment file
 echo "Adding connection values to environment settings"
 echo "export DEMO_ACS_NAME=${ACS_NAME}" >> ${DEMO_ENV_PATH} 
