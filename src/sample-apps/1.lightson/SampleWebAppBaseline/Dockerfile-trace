@@ -1,0 +1,6 @@
+FROM mabsimms/dotnetperfbase:latest
+ARG source
+WORKDIR /app
+EXPOSE 80
+COPY ./bin/Debug/netcoreapp1.1/publish .
+ENTRYPOINT ["dotnet", "SampleWebAppBaseline.dll"]

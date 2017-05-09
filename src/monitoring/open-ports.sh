@@ -6,7 +6,7 @@
 # Open up the monitoring ports; note - this is not a recommended production approach.  Would be 
 # better to install an nginx/haproxy specifically for the mgmt services and route traffic through
 # there
-PORTS=(3000 5601 8086)
+PORTS=(2003 3000 5601 8086)
 
 # Get the name of the network resources
 LB_NAME=`az network lb list --resource-group ${DEMO_RESOURCE_GROUP} --output table | \
