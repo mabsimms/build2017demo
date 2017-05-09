@@ -19,7 +19,7 @@ import io.gatling.core.Predef._
 import io.gatling.http.Predef._
 import scala.concurrent.duration._
 
-class PingSimulation extends Simulation {
+class RaffleRampSimulation extends Simulation {
 
   val httpConf = http
     .baseURL("http://masbldagent.eastus2.cloudapp.azure.com") // Here is the root for all relative URLs
@@ -28,18 +28,22 @@ class PingSimulation extends Simulation {
     .acceptLanguageHeader("en-US,en;q=0.5")
     .acceptEncodingHeader("gzip, deflate")
     .userAgentHeader("Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:16.0) Gecko/20100101 Firefox/16.0")
+    .shareConnections
 
-  val headers_10 = Map("Content-Type" -> "application/x-www-form-urlencoded") // Note the headers specific to a given request
+  // Note the headers specific to a given request
+  val headers_10 = Map("Content-Type" -> "application/x-www-form-urlencoded") 
 
-  val scn = scenario("Simple Ping test") // A scenario is a chain of requests and pauses
+  val scn = scenario("Simple Mobile Client") // A scenario is a chain of requests and pauses
     .repeat(1000) {
       exec(http("request_1")
-        .get("/api/ping"))
+        .get("/api/raffle"))
       .pause(1) // Note that Gatling has recorded real time pauses
       .exec(http("request_2")
-        .get("/api/ping"))
+        .get("/api/raffle"))
       .pause(2)
       }
 
-  setUp(scn.inject(atOnceUsers(10)).protocols(httpConf))
+  setUp(
+    scn.inject(rampUsersPerSec(10) to 10000 during(10 minutes))
+  ).protocols(httpConf)
 }

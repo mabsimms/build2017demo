@@ -22,7 +22,7 @@ import scala.concurrent.duration._
 class RaffleSimulation extends Simulation {
 
   val httpConf = http
-    .baseURL("http://localhost:8000") // Here is the root for all relative URLs
+    .baseURL("http://masbldagent.eastus2.cloudapp.azure.com") // Here is the root for all relative URLs
     .acceptHeader("application/json,text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8") // Here are the common headers
     .doNotTrackHeader("1")
     .acceptLanguageHeader("en-US,en;q=0.5")

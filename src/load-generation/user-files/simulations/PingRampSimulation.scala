@@ -19,7 +19,7 @@ import io.gatling.core.Predef._
 import io.gatling.http.Predef._
 import scala.concurrent.duration._
 
-class PingSimulation extends Simulation {
+class PingRampSimulation extends Simulation {
 
   val httpConf = http
     .baseURL("http://masbldagent.eastus2.cloudapp.azure.com") // Here is the root for all relative URLs
@@ -35,11 +35,12 @@ class PingSimulation extends Simulation {
     .repeat(1000) {
       exec(http("request_1")
         .get("/api/ping"))
-      .pause(1) // Note that Gatling has recorded real time pauses
       .exec(http("request_2")
         .get("/api/ping"))
-      .pause(2)
+      .pause(1)
       }
 
-  setUp(scn.inject(atOnceUsers(10)).protocols(httpConf))
+  setUp(
+    scn.inject(rampUsersPerSec(10) to 10000 during(10 minutes))
+  ).protocols(httpConf)
 }
