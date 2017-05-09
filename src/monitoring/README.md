@@ -1,5 +1,9 @@
 # Monitoring 
 
+## Profiling a .NET Core application
+
+- https://github.com/dotnet/coreclr/blob/master/Documentation/project-docs/linux-performance-tracing.md
+
 ## Temp - working with local dev
 
 ```

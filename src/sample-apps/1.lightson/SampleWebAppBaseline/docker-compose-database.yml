@@ -1,0 +1,15 @@
+version: '3'
+
+services:
+  dbinit:
+    image: mabsimms/masbld_1_efupdate
+    environment:
+      - SQL_DATASOURCE=tcp:sqlserver,1433
+      - SQL_USER=sa
+      - SQL_PASSWORD=S_PerSt!rongPW123
+    command: dotnet ef database update
+
+networks:
+  default:
+    external:
+      name: build2017-demo-network
