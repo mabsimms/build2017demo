@@ -1,0 +1,44 @@
+version: '3'
+
+services:
+  # The sample web application 
+  webapp:
+    image: mabsimms/bld2017_app_bugfix:latest  
+    environment:      
+      - SQL_DATASOURCE=tcp:sqlserver,1433
+      - SQL_USER=sa
+      - SQL_PASSWORD=S_PerStrongPW123
+      - REDIS_SERVER=redis
+
+  # Haproxy front-end
+  haproxy:
+    image: mabsimms/bld2017_haproxy_1:latest
+    ports: 
+      - "80:80"
+    deploy:
+      mode: global
+
+  # The redis cache
+  redis:
+    image: "redis:alpine"      
+
+  # The backing database
+  sqlserver:
+    image: "microsoft/mssql-server-linux"
+    ports:
+      - "1433:1433"
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=S_PerStrongPW123
+    volumes:
+      - data-sql2:/var/opt/mssql
+
+networks:
+  default:
+    external:
+      name: build2017-demo-network
+  
+volumes:
+  data-sql2:
+
+

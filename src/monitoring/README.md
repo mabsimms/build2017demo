@@ -1,10 +1,72 @@
 # Monitoring 
 
-## Profiling a .NET Core application
+This section covers how the monitoring solution was designed and implemented, along with
+how to deploy the monitoring services and agents to the Swarm cluster.
+
+This section's documentation needs much love.
+
+## Monitoring design
+
+The monitoring solution used for this demo was intended to demontrate Azure as an open platform
+and leverage some common OSS packages for a great end to end monitoring experience capturing
+metrics across the application and infrastructure.  The approach consists of these key 
+components:
+
+- InfluxDB.  Time series data store, great for ingesting, indexing and serving up metrics.
+- Grafana.  Visualization and dashboarding tool for metrics.  Pulls data from influx and 
+visualizes interactive dashboarmasimms@maslinbook:~/code/build2017demo/src/monitoring$ 
+
+
+
+- Telegraf.  Metrics agent for pulling, aggregating and forwarding metrics streams to influx. 
+Telegraf will be deployed on each Swarm node to capture container and host level metrics, as well as inside the haproxy container to capture real-time stats.
+
+## Monitoring haproxy
+
+TODO 
+
+## Deployment
+
+Deploying the monitoring services is relatively straightforward, consisting of opening the 
+relevant ports in the load balancer (for remote access to grafana), and deploying the 
+service and agent containers.
+
+### Step 1 - opening load balancer ports
+
+To open the relevant load balancer ports (3000 for grafana), execute the open-ports.sh 
+script.
+
+```bash
+./open-ports.sh 
+```
+
+Which results in output similar to:
+
+```bash
+Using load balancer name swarmm-agentpublic-20121181
+Using back end pool name swarmm-agentpublic-20121181
+Using front end name swarmm-agentpublic-20121181
+Creating load balancer probe for port 2003
+{
+  "etag": "W/\"b78df911-27a0-4c03-8448-93b2437f6202\"",
+  "id": "/subscriptions/3e9c25fc-55b3-4837-9bba-02b6eb204331/resourceGroups/masbld-rg/providers/Microsoft.Network/loadBalancers/swarmm-agentpublic-20121181/probes/probe2003",
+  "intervalInSeconds": 15,
+  "loadBalancingRules": null,
+  "name": "probe2003",
+  "numberOfProbes": 2,
+  "port": 2003,
+**SNIP**
+```
+
+### Step 2 - Deploying the monitoring stack
+
+## Holding area
+
+### Profiling a .NET Core application
 
 - https://github.com/dotnet/coreclr/blob/master/Documentation/project-docs/linux-performance-tracing.md
 
-## Temp - working with local dev
+### Temp - working with local dev
 
 ```
 sudo apt install docker.io

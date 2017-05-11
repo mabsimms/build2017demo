@@ -41,6 +41,6 @@ class PingRampSimulation extends Simulation {
       }
 
   setUp(
-    scn.inject(rampUsersPerSec(10) to 10000 during(10 minutes))
+    scn.inject(rampUsersPerSec(1) to 10 during(10 minutes))
   ).protocols(httpConf)
 }

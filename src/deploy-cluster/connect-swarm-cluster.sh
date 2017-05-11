@@ -22,6 +22,8 @@ AGENT_FQDN=`az network public-ip show --name ${AGENT_PIP_NAME} \
 echo "Agent public ip name ${AGENT_PIP_NAME} fqdn is ${AGENT_FQDN}"
 
 echo "Connecting tunnel to management endpoint $FQDN"
+echo ssh -fNL ${LOCAL_PORT}:localhost:${REMOTE_PORT} -p 2200 ${USERNAME}@${MGMT_FQDN} \
+    -i ${PATH_TO_PRIVATE_KEY}
 ssh -fNL ${LOCAL_PORT}:localhost:${REMOTE_PORT} -p 2200 ${USERNAME}@${MGMT_FQDN} \
     -i ${PATH_TO_PRIVATE_KEY}
 export DOCKER_HOST=:2375

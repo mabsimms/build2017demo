@@ -66,9 +66,6 @@ scp update-grafana-dashboard.sh $DEMO_MGMT_FQDN:update-grafana-dashboard.sh
 ssh $DEMO_MGMT_FQDN chmod 700 update-grafana-dashboard.sh
 ssh $DEMO_MGMT_FQDN "./update-grafana-dashboard.sh $MON_NODE $MONITORING_PASSWORD"
 
-# Open the monitoring ports
-./open-ports.sh
-
 # Load grafana data 
 cd grafana-dashboards
 wizzy init

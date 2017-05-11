@@ -41,5 +41,5 @@ class PingSimulation extends Simulation {
       .pause(2)
       }
 
-  setUp(scn.inject(atOnceUsers(10)).protocols(httpConf))
+  setUp(scn.inject(atOnceUsers(3)).protocols(httpConf))
 }

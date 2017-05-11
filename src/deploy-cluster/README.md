@@ -127,7 +127,7 @@ sed -i'' -e "s|##SSH_PUBLIC_KEY##|${SSH_PUBLIC_KEY}|" $PARAMETERS_FILE
 
 The fourth phase of the script actually creates the resource group and deploys the 
 Swarm cluster via the Azure Container Service.  Deploying the Swarm cluster can 
-take up to TODO minutes.
+take up to 10 minutes.
 
 ```bash
 # Deploy the cluster
@@ -259,76 +259,26 @@ The final step in cluster preparationw will be to run the appropriate script (in
 the Docker network(s), configure the underlying VMs, and open up the load balancer probes and routes to 
 access the monitoring tools (ELK, Grafana, InfluxDB) used later in the demo.
 
-The first step of the script creates a docker 
+The first step of the script creates a docker *swarm* network for swarm service containers
+to communicate with each other.  Note - ordinary docker containers (i.e. docker run) cannot
+attach to this network.
 
 ```bash
+# Note: all of the docker-compose files assume the presence of the build2017-demo-network
+# global network.  If you change this value you will have to update all of the compose 
+# files.
+NETWORK_NAME=build2017-demo-network
+NETWORK_RANGE=10.0.5.0/24
+
+# Create a shared (global) network for the demo resources
+# https://docs.docker.com/engine/userguide/networking/get-started-overlay/#run-an-application-on-your-network
+docker network create --driver overlay --subnet ${NETWORK_RANGE} ${NETWORK_NAME} --attachable
+
+# TODO - ssh to all of the machines and update sysctl for elasticsearch
 ```
 
-The second step in the script opens up the relevant ports through the Azure load balancer for the 
-monitoring services (installed later in the demo).
-
-```bash
-
-################################################################################################
-# https://docs.microsoft.com/en-us/azure/container-service/container-service-enable-public-access
-# Open up the monitoring ports; note - this is not a recommended production approach.  Would be 
-# better to install an nginx/haproxy specifically for the mgmt services and route traffic through
-# there
-PORTS=(3000, 8086, 8083)
-
-# Get the name of the network resources
-LB_NAME=`az network lb list --resource-group mas-bld-rg --output table | \
-    grep agent | tr -s ' ' | cut -d' ' -f2`
-echo "Using load balancer name ${LB_NAME}"
-
-POOL_NAME=`az network lb address-pool list --resource-group mas-bld-rg \
-    --lb-name swarm-agent-lb-10FB764F --output table | grep pool | cut -d' ' -f1`
-echo "Using back end pool name ${POOL_NAME}"
-
-FRONTEND_NAME=`az network lb frontend-ip list --resource-group mas-bld-rg \
-    --lb-name  swarm-agent-lb-10FB764F | jq .[0].name | sed 's/\"//g'`
-echo "Using front end name ${FRONTEND_NAME}" 
-
-for PORT in "${PORTS[@]}"
-do
-    # Create a load balancer probe for this port
-    echo "Creating load balancer probe for port ${PORT}"
-    az network lb probe create --resource-group ${RESOURCE_GROUP} --protocol Tcp \
-        --lb-name ${LB_NAME} --name probe${PORT} --port ${PORT} 
-
-    # Create a load balancing rule for this port
-    echo "Creating load balancer rule for port ${PORT}"
-    az network lb rule create --resource-group ${RESOURCE_GROUP} \
-        --protocol Tcp --lb-name ${LB_NAME} \
-        --name Allow${PORT} \
-        --backend-pool-name $POOL_NAME \
-        --frontend-ip-name $FRONTEND_NAME \
-        --probe-name probe${PORT} \
-        --frontend-port ${PORT} \
-        --backend-port ${PORT} 
-
-    # Create an NSG rule to allow traffic inbound on this port
-    # TODO
-done
-```
-
-The second step in the script gets a list of all of the agent nodes, and runs a sysctl update against 
-each of them.  This is required for elasticsearch to initialize, and must be set at a host (not a container)
-level.
-
-Note: this is not a production grade approach, as new nodes that are added to the cluster will not have this
-setting automatically applied.  In a production context, better to use a custom script action on startup.
-
-```bash
-kkk
-```
-
-Running this command results in output similar to the following; note the dynamic lookup of the various 
-Azure resources (to avoid hard-coding any vaules in the scripts).
-
-```bash
-```
-
+The second step in the script updates kernel parameters across the cluster, including 
+the sysctl changes needed for ElasticSearch to run.  TODO - still under development.
 
 ## Further reading and resources
 

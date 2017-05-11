@@ -1,0 +1,23 @@
+# Build the app from scratch, including having the ef tools
+FROM microsoft/dotnet:1.1.1-sdk
+WORKDIR /app
+
+# TODO - come back to this
+# Add the SQL Server client tools (for debugging).  Need to install apt-transport-https
+# to support pulling packages from https sources
+# https://docs.microsoft.com/en-us/sql/linux/sql-server-linux-setup-tools#ubuntu
+#RUN apt-get update && apt-get install -y apt-utils apt-transport-https  && \
+#    curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - && \
+#    curl https://packages.microsoft.com/config/ubuntu/16.04/prod.list | tee /etc/apt/sources.list.d/msprod.list  && \
+#    apt-get update && apt-get install mssql-tools unixodbc-dev netcat dnsutils  && \
+#    echo 'export PATH="$PATH:/opt/mssql-tools/bin"' >> ~/.bashrc  
+
+# Copy the full sources (with ef context)
+COPY . .
+RUN dotnet restore  && dotnet build
+
+ENV SQL_DATASOURCE tcp:sqlserver,1433
+ENV SQL_USER sa
+ENV SQL_PASSWORD S_PerSt!rongPW123
+
+ENTRYPOINT ["dotnet", "ef", "update", "database"]
