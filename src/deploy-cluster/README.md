@@ -11,7 +11,7 @@ and the Swarm Cluster by deploying an ACS ARM template.  Before the deployment s
 (`deploy-swarm-cluster.sh`) can be run the Azure CLI tools need to be installed, and valid
 login token obtained.
 
-This script is based on the Azure documentation (https://docs.microsoft.com/en-us/azure/container-service/container-service-deployment) [Container Service Deployment].
+This script is based on the Azure documentation for [Container Service Deployment](https://docs.microsoft.com/en-us/azure/container-service/container-service-deployment).
 
 ```bash
 # Ensure that Python and PIP are installed
