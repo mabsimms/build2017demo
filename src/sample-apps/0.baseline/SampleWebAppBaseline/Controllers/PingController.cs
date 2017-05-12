@@ -14,7 +14,6 @@ namespace SampleWebAppBaseline.Controllers
         public async Task<string> Get()
         {
             await Task.Delay(0);
-            _logger.LogInformation("Request for all ping information received");     
             return DateTime.UtcNow.ToString();
         }
 

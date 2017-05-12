@@ -460,6 +460,4 @@ highly .. challenging :) to get up and running correctly.  These links are helpf
 ### RSyslog
 
 - Sample rsyslog configuration file; [http://www.rsyslog.com/doc/v8-stable/_downloads/rsyslog-example.conf](  http://www.rsyslog.com/doc/v8-stable/_downloads/rsyslog-example.conf)
-
  
-### Monitoring docker containers
