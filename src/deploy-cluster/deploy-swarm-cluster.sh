@@ -1,11 +1,11 @@
 #!/bin/bash
 
-DNS_PREFIX=masbld
+DNS_PREFIX=masbld2
 AGENT_COUNT=8
 USERNAME=masimms
 RESOURCE_GROUP=${DNS_PREFIX}-rg
-LOCATION=eastus2
-DEPLOYMENT_NAME=demo
+LOCATION=westus
+DEPLOYMENT_NAME=demo2
 
 # Leave blank to auto-generate an SSH public key
 SSH_PUBLIC_KEY_FILE=${HOME}/.ssh/swarm_rsa.pub

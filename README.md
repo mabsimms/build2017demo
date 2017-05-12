@@ -1,6 +1,8 @@
 # Performance Tuning Under Pressure - Build 2017
 
-This repo contains the demo scripts and sample application for "Performance Tuning Under Pressure" presentation at build 2017.  This presentation walks through an example of making data-driven decisions for optimizing system performance when sudden success has arrived.  The demo breaks down into these sections:
+This repo contains the demo scripts and sample application for "Performance Tuning Under Pressure" presentation at build 2017.  This presentation walks through an example of making data-driven decisions for optimizing system performance when sudden success has arrived.  
+
+The demo breaks down into these sections:
 
 - [Cluster deployment](cluster-deploy).  The demo is based around  multi-container services running on Docker Swarm, with the swarm cluster deployed on Azure via acs-engine. 
 
@@ -19,9 +21,9 @@ influxdb and grafana for metrics aggregation and visualization, together with a 
 
 TODO
 
-[cluster-deploy]: deploy-cluster/README.md
-[app-deploy]: sample-apps/0.baseline/README.md
-[app-deploy2]: sample-apps/1.lightson/README.md
-[monitoring-deploy]: monitoring/README.md
-[load-deploy]: load-generation/README.md
+[cluster-deploy]: ./src/deploy-cluster/README.md
+[app-deploy]: ./src/sample-apps/0.baseline/README.md
+[app-deploy2]: ./src/sample-apps/1.lightson/README.md
+[monitoring-deploy]: ./src/monitoring/README.md
+[load-deploy]: ./src/load-generation/README.md
  
