@@ -8,10 +8,10 @@ steps and customizations for creating and configuring the cluster.
 
 The first step is to create the resource group (which will contain all of the demo resources) 
 and the Swarm Cluster by deploying an ACS ARM template.  Before the deployment script
-(deploy-swarm-cluster.sh) can be run the Azure CLI tools need to be installed, and valid
+(`deploy-swarm-cluster.sh`) can be run the Azure CLI tools need to be installed, and valid
 login token obtained.
 
-This script is based on the Azure documentation (https://docs.microsoft.com/en-us/azure/container-service/container-service-deployment)[Container Service Deployment].
+This script is based on the Azure documentation (https://docs.microsoft.com/en-us/azure/container-service/container-service-deployment) [Container Service Deployment].
 
 ```bash
 # Ensure that Python and PIP are installed
@@ -278,8 +278,10 @@ docker network create --driver overlay --subnet ${NETWORK_RANGE} ${NETWORK_NAME}
 ```
 
 The second step in the script updates kernel parameters across the cluster, including 
-the sysctl changes needed for ElasticSearch to run.  TODO - still under development.
+the sysctl changes needed for ElasticSearch to run.  
+
+TODO - still under development.
 
 ## Further reading and resources
 
-
+- 
