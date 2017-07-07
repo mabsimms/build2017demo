@@ -1,0 +1,48 @@
+apiVersion: extensions/v1beta1
+kind: ReplicaSet
+metadata:
+  name: influxdb
+  labels:
+    app: influxdb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: influxdb
+  template:
+    metadata:
+      labels:
+        app: influxdb
+    spec:
+      containers:
+        - name: influxdb
+          image: influxdb:1.2.4
+          resources:
+            requests:
+              cpu: 1
+              memory: 2Gi
+          livenessProbe:
+            httpGet:
+              path: /ping
+              port: 8086
+            initialDelaySeconds: 5
+            timeoutSeconds: 1
+          volumeMounts:
+            - name: config-volume
+              mountPath: "/etc/influxdb"
+            - name: data-volume
+              mountPath: "/var/lib/influxdb"
+          ports:
+            - containerPort: 8083
+              name: admin
+              protocol: TCP
+            - containerPort: 8086
+              name: http
+              protocol: TCP
+      volumes:
+        - name: config-volume
+          configMap:
+            name: monitoring-influxdb-config
+        - name: data-volume
+          persistentVolumeClaim:
+            claimName: influxdb
