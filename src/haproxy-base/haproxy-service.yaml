@@ -61,6 +61,7 @@ spec:
               mountPath: "/etc/telegraf"
             - name: data-volume
               mountPath: "/var/log/haproxy"
+      # TODO - add logrotate container to dispose of old files
       volumes:
         - name: haproxy-config-volume
           configMap:
