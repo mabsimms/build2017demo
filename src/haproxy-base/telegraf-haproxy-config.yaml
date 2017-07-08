@@ -3,11 +3,11 @@ data:
   INFLUX_DB: haproxy
   INFLUX_PORT: "8086"
   INFLUX_SERVER: influxdb
-  telegraf-haproxy.conf: |2+
+  telegraf.conf: |2+
 
     [[inputs.logparser]]
       ## file(s) to tail:
-      files = ["/var/log/haproxy.log"]
+      files = ["/var/log/haproxy/haproxy.log"]
       from_beginning = false
       name_override = "requests"
       ## For parsing logstash-style "grok" patterns:
