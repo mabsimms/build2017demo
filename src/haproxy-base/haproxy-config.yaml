@@ -1,0 +1,30 @@
+apiVersion: v1
+data:
+  haproxy.cfg: "global\n\tlog /dev/log\tlocal2\n\tlog /dev/log\tlocal1 notice\n\n\t#chroot
+    /var/lib/haproxy\n\n\tstats socket /run/haproxy/admin.sock mode 660 level admin\n\tstats
+    timeout 30s\n\n\tuser haproxy\n\tgroup haproxy\n\n\t# Default SSL material locations\n\tca-base
+    /etc/ssl/certs\n\tcrt-base /etc/ssl/private\n\n\t# Default ciphers to use on SSL-enabled
+    listening sockets.\n\t# For more information, see ciphers(1SSL). This list is
+    from:\n\t#  https://hynek.me/articles/hardening-your-web-servers-ssl-ciphers/\n\tssl-default-bind-ciphers
+    ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:ECDH+3DES:DH+3DES:RSA+AESGCM:RSA+AES:RSA+3DES:!aNULL:!MD5:!DSS\n\tssl-default-bind-options
+    no-sslv3\n\n\tmaxconn 20000\n\ndefaults\n\tlog\tglobal\n\tmode\thttp\n    log-format
+    \"%ci [%t] %s %HM %HP %HV %ST %U %B %H %Tq/%Tw/%Tc/%Tr/%Tt \\\"%[capture.req.hdr(0)]\\\"
+    %bi:%bp %fi:%fp %ac/%fc/%bc/%sc/%rc\"\n\n\toption\tdontlognull\n\toption  http-server-close\n\tretries
+    3\n\n    timeout http-request    30s\n\ttimeout connect         30s\n\ttimeout
+    queue           15s\n\ttimeout client          1m\n\ttimeout server          30s\n\ttimeout
+    http-keep-alive 5m\n\ttimeout check           20s\n\n\t#errorfile 400 /etc/haproxy/errors/400.http\n\t#errorfile
+    403 /etc/haproxy/errors/403.http\n\t#errorfile 408 /etc/haproxy/errors/408.http\n\t#errorfile
+    500 /etc/haproxy/errors/500.http\n\t#errorfile 502 /etc/haproxy/errors/502.http\n\t#errorfile
+    503 /etc/haproxy/errors/503.http\n\t#errorfile 504 /etc/haproxy/errors/504.http\n\nfrontend
+    fe_main\n\tmode http\n\tcapture request header User-Agent len 64\n    capture
+    request header Referer len 200\n\tmaxconn 20000\n\tbind :80\n\n\tdefault_backend
+    webapp\n\nbackend webapp\n\tmode http\n  \tserver WEBAPP_1 127.0.0.1:8000 check
+    weight 100\n"
+kind: ConfigMap
+metadata:
+  creationTimestamp: 2017-07-08T01:31:53Z
+  name: haproxy-config
+  namespace: default
+  resourceVersion: "103874"
+  selfLink: /api/v1/namespaces/default/configmaps/haproxy-config
+  uid: 39036794-637d-11e7-ab14-000d3a03b2f8

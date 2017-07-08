@@ -75,26 +75,9 @@ RUN useradd --system haproxy && \
     chown -R haproxy:haproxy /var/lib/haproxy
 
 #####################################################################################################
-# Install telegraf
-#####################################################################################################
-#RUN gpg \
-    #--keyserver hkp://ha.pool.sks-keyservers.net \
-    #--recv-keys 05CE15085FC09D18E99EFB22684A14CF2582E0C5
-
-ENV TELEGRAF_VERSION 1.1.2
-
-RUN apt-get update && apt-get install wget && \
-    wget -q https://dl.influxdata.com/telegraf/releases/telegraf_${TELEGRAF_VERSION}_amd64.deb.asc && \
-    wget -q https://dl.influxdata.com/telegraf/releases/telegraf_${TELEGRAF_VERSION}_amd64.deb && \    
-    dpkg -i telegraf_${TELEGRAF_VERSION}_amd64.deb && \
-    rm -f telegraf_${TELEGRAF_VERSION}_amd64.deb*
-
-#####################################################################################################
 # Install the baseline configuration and startup scripts
 #####################################################################################################
 COPY 49-haproxy.conf /etc/rsyslog.d/49-haproxy.conf
-COPY telegraf-haproxy.conf /etc/telegraf/telegraf.conf
-COPY haproxy.cfg /etc/haproxy.cfg
 
 # Remove the built-in sys log utils
 RUN rm -rf /etc/service/syslog-ng && \
@@ -109,17 +92,6 @@ RUN chmod +x /etc/service/haproxy/run
 RUN mkdir /etc/service/rsyslogd
 COPY 10-exec-rsyslogd.sh /etc/service/rsyslogd/run
 RUN chmod +x /etc/service/rsyslogd/run
-
-# Telegraf
-RUN mkdir /etc/service/telegraf
-COPY 20-exec-telegraf.sh /etc/service/telegraf/run
-RUN chmod +x /etc/service/telegraf/run
-
-ENV INFLUX_SERVER localhost
-ENV INFLUX_PORT 8086
-ENV INFLUX_DB telegraf
-
-# TODO - service startups
 
 #####################################################################################################
 # Clean up APT when done.

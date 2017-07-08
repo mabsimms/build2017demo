@@ -1,0 +1,72 @@
+apiVersion: extensions/v1beta1
+kind: ReplicaSet
+metadata:
+  name: haproxy
+  labels:
+    app: haproxy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: haproxy
+  template:
+    metadata:
+      labels:
+        app: haproxy
+    spec:
+      containers:
+        - name: haproxy
+          image: masdev.azurecr.io/haproxy-base
+          resources:
+            requests:
+              cpu: 1
+              memory: 2Gi
+          livenessProbe:
+            tcpSocket:
+              port: 80
+            initialDelaySeconds: 15
+            timeoutSeconds: 1
+          volumeMounts:
+            - name: haproxy-config-volume
+              mountPath: "/etc/haproxy"
+            - name: data-volume
+              mountPath: "/var/log/haproxy"
+          ports:
+            - containerPort: 80
+              name: http
+              protocol: TCP
+            - containerPort: 443
+              name: https
+              protocol: TCP
+        - name: telegraf
+          image: telegraf:1.2
+          env:
+            - name: INFLUX_SERVER
+              valueFrom:
+                configMapKeyRef:
+                  name: telegraf-haproxy-config
+                  key: INFLUX_SERVER
+            - name: INFLUX_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: telegraf-haproxy-config
+                  key: INFLUX_PORT
+            - name: INFLUX_DB
+              valueFrom:
+                configMapKeyRef:
+                  name: telegraf-haproxy-config
+                  key: INFLUX_DB
+          volumeMounts:
+            - name: telegraf-haproxy-config-volume
+              mountPath: "/etc/telegraf"
+            - name: data-volume
+              mountPath: "/var/log/haproxy"
+      volumes:
+        - name: haproxy-config-volume
+          configMap:
+            name: haproxy-config
+        - name: telegraf-haproxy-config-volume
+          configMap:
+            name: telegraf-haproxy-config
+        - name: data-volume
+          emptyDir: {}

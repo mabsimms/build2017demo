@@ -1,0 +1,44 @@
+apiVersion: v1
+data:
+  INFLUX_DB: haproxy
+  INFLUX_PORT: "8086"
+  INFLUX_SERVER: influxdb
+  telegraf-haproxy.conf: |2+
+
+    [[inputs.logparser]]
+      ## file(s) to tail:
+      files = ["/var/log/haproxy.log"]
+      from_beginning = false
+      name_override = "requests"
+      ## For parsing logstash-style "grok" patterns:
+      [inputs.logparser.grok]
+        patterns = ["%{CUST_LOG}"]
+        custom_patterns = '''
+          CUST_LOG %{IP:client_ip} %{HAPROXYDATE:date} %{WORD:server:tag} %{WORD:method} %{URIPATH:uri:tag} HTTP/%{NUMBER:httpver:float} %{NUMBER:statuscode:tag} %{NUMBER:csBytes:int} %{NUMBER:scBytes:int} %{WORD:hostname} %{NUMBER:client_wait:int}/%{NUMBER:queue_wait:int}/%{NUMBER:connection_wait:int}/%{NUMBER:server_wait:int}/%{NUMBER:elapsed:int} %{QS:useragent} %{IP:fe_ip}:%{NUMBER:fe_port} %{IP:be_ip}:%{NUMBER:be_port} %{NUMBER:conn_active:int}/%{NUMBER:conn_fe:int}/%{NUMBER:conn_be:int}/%{NUMBER:conn_srv:int}/%{NUMBER:retries:int}
+          HAPROXYDATE \[%{MONTHDAY:haproxy_hour}/%{MONTH:haproxy_month}/%{YEAR:haproxy_year}:%{HOUR:haproxy_hour}:%{MINUTE:haproxy_minute}:%{SECOND:haproxy_second}\]
+        '''
+
+    [[inputs.haproxy]]
+      ## An array of address to gather stats about. Specify an ip on hostname
+      ## with optional port. ie localhost, 10.10.3.33:1936, etc.
+      ## Make sure you specify the complete path to the stats endpoint
+      ## including the protocol, ie http://10.10.3.33:1936/haproxy?stats
+
+      ## You can also use local socket with standard wildcard globbing.
+      ## Server address not starting with 'http' will be treated as a possible
+      ## socket, so both examples below are valid.
+      servers = ["socket:/run/haproxy/admin.sock"]
+
+    [[outputs.influxdb]]
+      urls = ["http://$INFLUX_SERVER:$INFLUX_PORT"] # required
+      database = "$INFLUX_DB"
+      timeout = "5s"
+
+kind: ConfigMap
+metadata:
+  creationTimestamp: 2017-07-08T02:06:17Z
+  name: telegraf-haproxy-config
+  namespace: default
+  resourceVersion: "106827"
+  selfLink: /api/v1/namespaces/default/configmaps/telegraf-haproxy-config
+  uid: 074f4459-6382-11e7-ab14-000d3a03b2f8

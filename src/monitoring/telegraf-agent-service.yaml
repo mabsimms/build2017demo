@@ -1,0 +1,38 @@
+apiVersion: extensions/v1beta1
+kind: "DaemonSet"
+metadata:
+  labels:
+    app: telegraf-host
+  name: telegraf-host
+spec:
+  template:
+    metadata:
+      labels:
+        app: telegraf-host
+    spec:
+      containers:
+        - name: telegraf
+          image: telegraf:1.2
+          env:
+          - name: INFLUX_SERVER
+            valueFrom:
+              configMapKeyRef:
+                name: telegraf-agent-config
+                key: INFLUX_SERVER
+          - name: INFLUX_PORT
+            valueFrom:
+              configMapKeyRef:
+                name: telegraf-agent-config
+                key: INFLUX_PORT
+          - name: INFLUX_DB
+            valueFrom:
+              configMapKeyRef:
+                name: telegraf-agent-config
+                key: INFLUX_DB
+          volumeMounts:
+           - name: config-volume
+             mountPath: "/etc/telegraf"
+      volumes:
+        - name: config-volume
+          configMap:
+            name: telegraf-agent-config
