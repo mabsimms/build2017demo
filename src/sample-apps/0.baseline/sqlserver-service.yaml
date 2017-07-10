@@ -1,0 +1,52 @@
+apiVersion: extensions/v1beta1
+kind: ReplicaSet
+metadata:
+  name: sqlserver
+  labels:
+    app: webapp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: webapp
+  template:
+    metadata:
+      labels:
+        app: webapp
+    spec:
+      containers:
+        - name: sqlserver
+          image: microsoft/mssql-server-linux
+          resources:
+            requests:
+              cpu: 0.5
+              memory: 4Gi
+          livenessProbe:
+            tcpSocket:
+              port: 1433
+            initialDelaySeconds: 30
+            timeoutSeconds: 5
+          env:
+            - name: ACCEPT_EULA
+              value: 'Y'
+            - name: SA_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: sql-creds
+                  key: passwd
+          volumeMounts:
+            - name: webapp-0-config-volume
+              mountPath: "/etc/haproxy"
+            - name: data-volume
+              mountPath: "/var/opt/mssql"
+          ports:
+            - containerPort: 1443
+              name: tds
+              protocol: TCP
+          volumeMounts:
+            - name: data-volume
+              mountPath: "/var/log/haproxy"
+      volumes:
+        - name: data-volume
+          persistentVolumeClaim:
+            claimName: sqlserver
