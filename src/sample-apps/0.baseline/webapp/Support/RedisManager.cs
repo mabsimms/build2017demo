@@ -24,8 +24,8 @@ namespace SampleWebApp.Baseline
             Console.WriteLine("Looking up IP address(es) for redis server {0}", server);
             var ipAddresses = Dns.GetHostAddressesAsync(server).GetAwaiter().GetResult();
 
-            // Note - this avoids pulling in ::1 on Windows systems when calling loopback in test
-            // scenarios
+            // Note - this avoids pulling in ::1 (IPv6) on Windows systems when calling 
+            // loopback in test scenarios
             var addr = ipAddresses.FirstOrDefault(e => 
                 e.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork);
 

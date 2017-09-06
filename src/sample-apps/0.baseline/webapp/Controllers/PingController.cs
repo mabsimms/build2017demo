@@ -9,7 +9,7 @@ namespace SampleWebAppBaseline.Controllers
     [Route("api/ping")]
     public class PingController : Controller
     {
-            // GET: api/raffle
+        // GET: api/raffle
         [HttpGet]
         public async Task<string> Get()
         {

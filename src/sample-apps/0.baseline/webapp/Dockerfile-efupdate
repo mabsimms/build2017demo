@@ -1,0 +1,11 @@
+FROM microsoft/dotnet:2.0-sdk
+WORKDIR /app
+
+# Override the core dump configuration
+ENV COMPlus_PerfMapEnabled 1
+
+# Copy in source
+ADD . .
+
+# Execute the main application
+ENTRYPOINT ["/bin/bash"]

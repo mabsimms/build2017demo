@@ -1,0 +1,186 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: sql-creds
+type: Opaque
+data:
+  # This is a really bad practice (by design :).  Do not use
+  # the global SA account for end-user apps
+  username: c2EK
+  password: VGhpc0lzTXlBd2Vzb21lUGFzc3dvcmQhQCM=
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: sqlserver
+  annotations:
+    volume.beta.kubernetes.io/storage-class: default
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 512Gi
+---
+apiVersion: apps/v1beta1
+kind: StatefulSet
+metadata:
+  name: sqlserver
+  labels:
+    app: webapp
+    tier: sql
+spec:
+  serviceName: "sqlserver"
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: webapp
+        tier: sql
+    spec:
+      terminationGracePeriodSeconds: 240
+      containers:
+        - name: sqlserver
+          image: microsoft/mssql-server-linux
+          resources:
+            requests:
+              cpu: 0.5
+              memory: 4Gi
+          livenessProbe:
+            tcpSocket:
+              port: 1433
+            initialDelaySeconds: 30
+            timeoutSeconds: 5
+          env:
+            - name: ACCEPT_EULA
+              value: 'Y'
+            - name: SA_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: sql-creds
+                  key: password
+          volumeMounts:
+            - name: data-volume
+              mountPath: "/var/opt/mssql"
+          ports:
+            - containerPort: 1443
+              name: tds
+              protocol: TCP
+      volumes:
+        - name: data-volume
+          persistentVolumeClaim:
+            claimName: sqlserver
+---
+apiVersion: v1
+kind: Service
+metadata: 
+  name: sqlserver
+  labels:
+    app: webapp
+    tier: sql
+spec:
+  ports:
+  - port: 1433
+  selector:
+    app: webapp
+    tier: sql
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: redis
+  labels:
+    app: webapp
+    name: redis
+spec:
+  containers:
+  - name: redis
+    image: redis
+    volumeMounts:
+    - name: redis-storage
+      mountPath: /data/redis
+    ports:
+    - containerPort: 6379
+  volumes:
+  - name: redis-storage
+    emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+  labels:
+    app: webapp
+    name: redis
+spec:
+  ports:
+  - port: 6379
+    targetPort: 6379
+  selector:
+    app: webapp
+    name: redis
+---
+apiVersion: v1
+kind: ConfigMap
+data:
+  SQL_DATASOURCE: tcp:sqlserver,1433
+  REDIS_SERVER: redis
+metadata:
+  creationTimestamp: 2017-07-09T19:10:19Z
+  name: webapp-config
+  namespace: default
+  resourceVersion: "313703"
+  selfLink: /api/v1/namespaces/default/configmaps/webapp-config
+  uid: 3fc355e6-64da-11e7-ab14-000d3a03b2f8
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: webapp-0
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: webapp
+        tier: frontend
+    spec:
+      containers:
+      - name: webapp
+        image: docker.io/mabsimms/bld2017_app_0:latest
+        env:
+            - name: SQL_DATASOURCE
+              valueFrom:
+                configMapKeyRef:
+                  name: webapp-config
+                  key: SQL_DATASOURCE
+            - name: SQL_USER
+              value: "sa"
+            - name: SQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: sql-creds
+                  key: password
+            - name: REDIS_SERVER
+              valueFrom:
+                configMapKeyRef:
+                  name: webapp-config
+                  key: REDIS_SERVER
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata: 
+  name: webapp
+  labels:
+    app: webapp
+    tier: frontend
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    targetPort: 80
+  selector:
+    app: webapp
+    tier: frontend
