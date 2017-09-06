@@ -1,17 +1,7 @@
 #!/bin/bash
 
-# Build the haproxy image
-cd haproxy
-./build.sh
-cd ../
+# Create the updated configuration map from the haproxy cfg file
+kubectl create configmap haproxy-config --from-file=haproxy/haproxy.cfg
+kubectl get configmap haproxy-config -o yaml > haproxy-config.yaml
 
-# Force build a new dotnet image
-cd SampleWebAppBaseline
-./build.sh
-cd ../
 
-# Bring up the full image set
-sudo docker-compose pull
-
-echo "Starting containers.."
-docker stack deploy --compose-file docker-compose.yml webapp1
