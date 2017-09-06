@@ -32,7 +32,12 @@ spec:
           volumeMounts:
            - name: config-volume
              mountPath: "/etc/telegraf"
+           - name: docker-sock   
+             mountPath: /var/run 
       volumes:
         - name: config-volume
           configMap:
             name: telegraf-agent-config
+        - name: docker-sock 
+          hostPath: 
+            path: /var/run 
